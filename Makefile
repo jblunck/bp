@@ -1,7 +1,11 @@
 OUTPUTDIR := target
 
+VERSION ?= $(shell build/setlocalversion)
+GIT_COMMIT_SHA ?= $(shell build/setlocalversion --git-commit-sha)
+LDFLAGS := -ldflags "-w -s -X main.Version=${VERSION} -X main.GitCommitSha=${GIT_COMMIT_SHA}"
+
 $(OUTPUTDIR)/boilerplate: cmd/boilerplate/*.go
-	go build -tags release -o $@ $^
+	go build ${LDFLAGS} -tags release -o $@ $^
 
 .DEFAULT_GOAL := all
 .PHONY: all lint clean

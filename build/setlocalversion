@@ -1,0 +1,32 @@
+#!/bin/sh
+
+usage() {
+        echo "Usage: $0 [--git-commit-sha]" >&2
+        exit 1
+}
+
+git_commit_sha=false
+if test "$1" = "--git-commit-sha"; then
+	git_commit_sha=true
+	shift
+fi
+if test $# -gt 0; then
+        usage
+fi
+
+if $git_commit_sha; then
+	printf '%s' $(git rev-parse HEAD)
+else
+	if tag="$(git describe --tags 2>/dev/null)"; then
+		echo -n $tag
+	else
+		# if we don't have a tag
+		head=$(git rev-parse --short HEAD)
+		printf '0.0.0-0%s%s' -g $head
+	fi
+fi
+
+# check for uncommitted changes
+if ! git diff-index --quiet HEAD; then
+        printf '%s' -dirty
+fi

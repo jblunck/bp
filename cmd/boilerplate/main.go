@@ -15,7 +15,12 @@ import (
 	zlog "github.com/jblunck/bp/internal/zerolog"
 )
 
-var Version = "0.0.0"
+var (
+	// Version information from `build/setlocalversion`
+	Version string
+	// GitCommitSha information from `build/setlocalversion --git-commit-sha`
+	GitCommitSha string
+)
 
 func init() {
 	viper.SetConfigName("config")
@@ -53,6 +58,7 @@ func main() {
 	// output application configuration on startup
 	log.Info().
 		Str("config", jsonStringSettings()).
+		Str("GitCommitSha", GitCommitSha).
 		Msgf("%s version %s", viper.GetString("k8s_app_name"), Version)
 
 	router := gin.New()
