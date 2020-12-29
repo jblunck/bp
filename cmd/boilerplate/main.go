@@ -11,7 +11,9 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/rs/zerolog/log"
 	"github.com/spf13/viper"
+	"go.opentelemetry.io/contrib/instrumentation/github.com/gin-gonic/gin/otelgin"
 
+	"github.com/jblunck/bp/internal/otel"
 	zlog "github.com/jblunck/bp/internal/zerolog"
 )
 
@@ -63,6 +65,10 @@ func main() {
 
 	router := gin.New()
 	router.Use(zlog.Middleware(log.With().Logger()))
+
+	flush := otel.InitTracer(map[string]string{"version": Version, "GitCommitSha": GitCommitSha})
+	defer flush()
+	router.Use(otelgin.Middleware(viper.GetString("k8s_app_name")))
 
 	router.GET("/healthz", func(c *gin.Context) {
 		c.Status(http.StatusNoContent)
