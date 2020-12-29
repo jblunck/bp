@@ -62,7 +62,7 @@ func main() {
 		Msgf("%s version %s", viper.GetString("k8s_app_name"), Version)
 
 	router := gin.New()
-	router.Use(zlog.Middleware())
+	router.Use(zlog.Middleware(log.With().Logger()))
 
 	router.GET("/healthz", func(c *gin.Context) {
 		c.Status(http.StatusNoContent)
