@@ -3,7 +3,6 @@ package main
 import (
 	"encoding/json"
 	"fmt"
-	"net/http"
 	"net/url"
 	"os"
 	"path"
@@ -70,9 +69,7 @@ func main() {
 	defer flush()
 	router.Use(otelgin.Middleware(viper.GetString("k8s_app_name")))
 
-	router.GET("/healthz", func(c *gin.Context) {
-		c.Status(http.StatusNoContent)
-	})
+	router.GET("/healthz", HealthzHandler)
 
 	router.Run(fmt.Sprintf(":%d", viper.GetInt("port")))
 }
